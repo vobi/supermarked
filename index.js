@@ -26,7 +26,7 @@ function supermarked(src, options) {
   var result = marked.parser(tokens, options)
   if (!options.ignoreMentions) {
     var services = options.services || exports.services;
-    result = result.replace(/([^ ]+): *@([A-Za-z0-9_-]+)/, function (_, service, user) {
+    result = result.replace(/([^ >]+): *@([A-Za-z0-9_-]+)/, function (_, service, user) {
         service = service.toLowerCase();
         if (services[service]) {
           return '<a href="'
