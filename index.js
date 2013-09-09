@@ -7,23 +7,10 @@ supermarked.parse = supermarked;
 function supermarked(src, options) {
   options = options || {};
   options.gfm = options.gfm !== false;
-  var aliases = options.aliases || exports.aliases;
   options.highlight = options.highlight || function (code, lang) {
-    if (lang) {
-      try {
-        return hljs.highlight(aliases[lang.toLowerCase()] || lang.toLowerCase(), code).value;
-      } catch (ex) {} //let marked automatically escape code in a language we don't speak
-    } else {
-      try {
-        if (!options.ignoreMath && /^\$.+\$$/.test(code))
-          var res = math(code.substring(1, code.length - 1))
-          res.setAttribute('style', 'display: block;')
-          return res.toString();
-      } catch (ex) {}
-    }
+    return hljs.highlightAuto(code).value;
   }
-  var tokens = marked.lexer(src, options);
-  var result = marked.parser(tokens, options)
+  var result = src;
   if (!options.ignoreMentions) {
     var services = options.services || exports.services;
     result = result.replace(/([^ >]+): *@([A-Za-z0-9_-]+)/, function (_, service, user) {
@@ -53,12 +40,25 @@ function supermarked(src, options) {
       });;
   }
   if (!options.ignoreMath) {
-    result = result.replace(/<pre><code><math/g, '<math').replace(/<\/math><\/code><\/pre>/g, '</math>').replace(/\\\$/g, '__DOLLAR_SIGN__').split('$');
-    for (var i = 1; i < result.length; i += 2) {
-      result[i] = math(result[i].trim().replace(/__DOLLAR_SIGN__/g, '$').replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<')).toString();
+    result = src.replace(/\\\$/g, '__DOLLAR_SIGN__').split('$$');
+    for (var i = 1; i < result.length; i += 2) { // $$ blocks
+      result[i] = math(result[i].trim());
+      result[i].setAttribute('class', 'block');
+      result[i] = result[i].toString();
+    }
+    for (var i = 0; i < result.length; i += 2) {
+      splt = result[i].split('$');
+      for(var j = 1; j < splt.length; j += 2){ // $ blocks
+        splt[j] = math(splt[j].trim());
+        splt[j].setAttribute('class', 'inline');
+        splt[j] = splt[j].toString();
+      }
+      result[i] = splt.join('');
     }
     result = result.join('').replace(/__DOLLAR_SIGN__/g, '$');
   }
+  var tokens = marked.lexer(result, options);
+  var result = marked.parser(tokens, options);
   return result;
 }
 
@@ -71,7 +71,3 @@ var services = exports.services = {
   'local': '/user/:user:'
 };
 services['@'] = services.local;//set the default here
-
-var alises = exports.aliases = {
-  'js': 'javascript'
-};
