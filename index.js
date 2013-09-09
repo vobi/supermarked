@@ -40,7 +40,7 @@ function supermarked(src, options) {
       });;
   }
   if (!options.ignoreMath) {
-    result = src.replace(/\\\$/g, '__DOLLAR_SIGN__').split('$$');
+    result = result.replace(/\\\$/g, '__DOLLAR_SIGN__').split('$$');
     for (var i = 1; i < result.length; i += 2) { // $$ blocks
       result[i] = math(result[i].trim());
       result[i].setAttribute('class', 'block');
