@@ -33,7 +33,7 @@ function supermarked(src, options) {
            + services[service].replace(':user:', user)
            + '" class="user-profile user-profile-'
            + service 
-           + '">@' 
+           + '">' 
            + user 
            + '</a>';
         } else {
@@ -44,7 +44,7 @@ function supermarked(src, options) {
         if (services['@']) {
           return ' <a href="'
            + services['@'].replace(':user:', user)
-           + '" class="user-profile">@' 
+           + '" class="user-profile">' 
            + user 
            + '</a>';
         } else {
