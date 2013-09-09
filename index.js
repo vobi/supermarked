@@ -67,6 +67,7 @@ var services = exports.services = {
   'github': 'https://github.com/:user:',
   'npm': 'https://npmjs.org/~:user:',
   'facebook': 'https://www.facebook.com/:user:',
+  'wikipedia': 'https://en.wikipedia.org/wiki/:user:',
   'local': '/user/:user:'
 };
 services['@'] = services.local;//set the default here
